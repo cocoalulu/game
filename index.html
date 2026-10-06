@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>花生的游戏合集</title>
+<meta name="description" content="花生的游戏合集 — 精选经营养成、休闲治愈、剧情冒险小游戏，点开即玩。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥜</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ===== 海盐奶霜 色卡 ===== */
+  :root {
+    --salt-100: #E6EDF5;   /* 雾霾蓝白 */
+    --salt-200: #DAECF2;   /* 冰晶蓝 */
+    --salt-300: #CADEF1;   /* 奶霜蓝 */
+    --salt-400: #C1E5F2;   /* 海盐蓝 */
+
+    --snow: #F8FBFE;
+    --ink: #55637A;
+    --ink-soft: #8794A8;
+    --ink-deep: #3E4A5E;
+    --line: #E2ECF5;
+
+    --radius: 22px;
+    --shadow: 0 10px 28px rgba(140, 172, 205, .15);
+    --shadow-hover: 0 18px 40px rgba(140, 172, 205, .26);
+    --grad-main: linear-gradient(135deg, #CADEF1 0%, #C1E5F2 100%);
+    --grad-soft: linear-gradient(135deg, #E6EDF5 0%, #DAECF2 100%);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--salt-100); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--salt-300);
+    border-radius: 999px;
+    border: 2px solid var(--salt-100);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: #B3D2EC; }
+
+  body {
+    background:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,.95) 0 70px, transparent 71px),
+      radial-gradient(circle at 85% 18%, rgba(255,255,255,.85) 0 55px, transparent 56px),
+      radial-gradient(circle at 50% 5%, rgba(255,255,255,.6) 0 40px, transparent 41px),
+      linear-gradient(180deg, #D7E7F3 0%, #E9F2F9 40%, #F8FBFE 100%);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: 'Nunito', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 60px;
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== 云朵装饰 ===== */
+  .cloud {
+    position: fixed;
+    background: rgba(255,255,255,.8);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(1px);
+  }
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: inherit;
+    border-radius: 50%;
+  }
+  .cloud-1 { width: 120px; height: 50px; top: 12%; left: 3%; opacity: .75; }
+  .cloud-1::before { width: 60px; height: 60px; top: -28px; left: 15px; }
+  .cloud-1::after { width: 45px; height: 45px; top: -18px; left: 60px; }
+  .cloud-2 { width: 90px; height: 38px; top: 22%; right: 6%; opacity: .65; }
+  .cloud-2::before { width: 45px; height: 45px; top: -22px; left: 12px; }
+  .cloud-2::after { width: 35px; height: 35px; top: -14px; left: 48px; }
+  .cloud-3 { width: 100px; height: 40px; top: 55%; left: 5%; opacity: .55; }
+  .cloud-3::before { width: 50px; height: 50px; top: -25px; left: 12px; }
+  .cloud-3::after { width: 38px; height: 38px; top: -16px; left: 52px; }
+  .cloud-4 { width: 80px; height: 32px; top: 70%; right: 8%; opacity: .6; }
+  .cloud-4::before { width: 40px; height: 40px; top: -20px; left: 10px; }
+  .cloud-4::after { width: 30px; height: 30px; top: -12px; left: 42px; }
+
+  /* ===== 顶栏 ===== */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    background: rgba(248, 251, 254, .78);
+    border-bottom: 2px solid var(--line);
+    padding: 0 24px;
+  }
+
+  .header-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: 64px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-family: 'Fredoka', 'PingFang SC', sans-serif;
+    font-weight: 700;
+    font-size: 19px;
+    color: var(--ink-deep);
+    white-space: nowrap;
+    letter-spacing: .2px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .22s ease;
+  }
+  .logo:hover { transform: scale(1.035); }
+  .logo:hover .logo-icon {
+    box-shadow: 0 6px 18px rgba(140,172,205,.45), inset 0 1px 0 rgba(255,255,255,.85);
+  }
+  .logo-icon {
+    width: 34px; height: 34px;
+    background: var(--grad-main);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    box-shadow: 0 4px 12px rgba(140,172,205,.3), inset 0 1px 0 rgba(255,255,255,.8);
+    transition: box-shadow .22s ease;
+    flex-shrink: 0;
+  }
+
+  .nav-cats { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .nav-cats button {
+    font-family: 'Nunito', 'PingFang SC', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all .2s ease;
+    white-space: nowrap;
+  }
+  .nav-cats button:hover { background: var(--salt-100); color: var(--ink-deep); }
+  .nav-cats button.active {
+    background: var(--grad-main);
+    color: var(--ink-deep);
+    border-color: transparent;
+    box-shadow: 0 6px 16px rgba(140,172,205,.32), inset 0 1px 0 rgba(255,255,255,.75);
+  }
+
+  .btn-random {
+    font-family: 'Nunito', 'PingFang SC', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    padding: 9px 20px;
+    border: none;
+    border-radius: 999px;
+    background: var(--grad-main);
+    color: var(--ink-deep);
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(140,172,205,.34), inset 0 1px 0 rgba(255,255,255,.75);
+    transition: transform .2s, filter .2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-random:hover { transform: translateY(-2px) scale(1.03); filter: brightness(1.04); }
+  .btn-random:active { transform: translateY(0) scale(.98); }
+
+  .logo:focus-visible,
+  .game-card:focus-visible,
+  .nav-cats button:focus-visible,
+  .filter-cats button:focus-visible,
+  .btn-random:focus-visible,
+  .search-box input:focus-visible,
+  .weibo-cta:focus-visible,
+  .footer-link:focus-visible {
+    outline: 3px solid #A9CCEA;
+    outline-offset: 3px;
+  }
+
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== 工具栏 ===== */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 34px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .search-box { flex: 1; min-width: 220px; position: relative; }
+  .search-box input {
+    width: 100%;
+    padding: 12px 20px 12px 46px;
+    border: 2px solid var(--salt-300);
+    border-radius: 999px;
+    font-family: 'Nunito', 'PingFang SC', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink);
+    background: rgba(255,255,255,.92);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .search-box input::placeholder { color: #A7B6C8; font-weight: 600; }
+  .search-box input:focus {
+    border-color: #A9CCEA;
+    box-shadow: 0 0 0 4px rgba(202,222,241,.4);
+  }
+  .search-box .search-icon {
+    position: absolute;
+    left: 17px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    opacity: .45;
+    pointer-events: none;
+  }
+  .filter-cats { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-cats button {
+    font-family: 'Nunito', 'PingFang SC', sans-serif;
+    font-weight: 700;
+    font-size: 12.5px;
+    padding: 7px 17px;
+    border-radius: 999px;
+    border: 2px solid var(--salt-300);
+    background: rgba(255,255,255,.78);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all .2s ease;
+    white-space: nowrap;
+  }
+  .filter-cats button:hover {
+    border-color: #A9CCEA;
+    background: var(--salt-100);
+    color: var(--ink-deep);
+  }
+  .filter-cats button.active {
+    background: var(--grad-main);
+    color: var(--ink-deep);
+    border-color: transparent;
+    box-shadow: 0 6px 16px rgba(140,172,205,.32), inset 0 1px 0 rgba(255,255,255,.75);
+  }
+
+  /* ===== 游戏网格 ===== */
+  .game-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .game-card {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, .9);
+    border: 2px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s;
+    position: relative;
+  }
+  .game-card:hover {
+    transform: translateY(-5px) rotate(-0.35deg);
+    border-color: var(--salt-300);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* 封面：图片缺失/加载失败时自动显示 emoji 占位 */
+  .cover {
+    position: relative;
+    overflow: hidden;
+    background: var(--grad-soft);
+    aspect-ratio: 16 / 9;
+  }
+  .cover img {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .35s ease;
+  }
+  .cover-ph {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 54px;
+    line-height: 1;
+    background:
+      radial-gradient(circle at 25% 25%, rgba(255,255,255,.9) 0 26px, transparent 27px),
+      radial-gradient(circle at 78% 72%, rgba(255,255,255,.7) 0 18px, transparent 19px),
+      var(--grad-soft);
+    user-select: none;
+  }
+  .game-card:hover .cover img { transform: scale(1.04); }
+
+  .badge {
+    position: absolute;
+    top: 11px;
+    right: 11px;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 4px 11px;
+    border-radius: 999px;
+    letter-spacing: .5px;
+    z-index: 2;
+  }
+  .badge.new {
+    background: var(--salt-400);
+    color: #3A6E8F;
+    box-shadow: 0 4px 12px rgba(193,229,242,.8), inset 0 1px 0 rgba(255,255,255,.8);
+  }
+  /* demo 徽章：淡紫，和 NEW 区分开 */
+  .badge.demo {
+    background: linear-gradient(135deg, #E9E3F8 0%, #DED6F1 100%);
+    color: #6C6098;
+    box-shadow: 0 4px 12px rgba(214,206,238,.85), inset 0 1px 0 rgba(255,255,255,.8);
+  }
+  .card-body {
+    padding: 13px 17px 15px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .card-body h3 {
+    margin: 0 0 6px;
+    font-family: 'Fredoka', 'PingFang SC', sans-serif;
+    font-size: 16.5px;
+    font-weight: 700;
+    color: var(--ink-deep);
+    line-height: 1.32;
+  }
+  .card-body p {
+    margin: 0 0 10px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.55;
+    font-weight: 600;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+  .tags span {
+    display: inline-block;
+    padding: 3px 11px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .tags span:nth-child(1) { background: var(--salt-100); color: #5A7EA8; }
+  .tags span:nth-child(2) { background: var(--salt-200); color: #3D7A99; }
+  .tags span:nth-child(3) { background: var(--salt-400); color: #40628A; }
+  .play {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: auto;
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #7FA6C6;
+    transition: color .2s, transform .2s;
+  }
+  .game-card:hover .play { color: #4E86AD; transform: translateX(3px); }
+
+  /* ===== 微博反馈卡片 ===== */
+  .feedback-section {
+    margin-top: 52px;
+    margin-bottom: 40px;
+  }
+  .feedback-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #EDF5FA 0%, #E6EDF5 50%, #DAECF2 100%);
+    border: 2px solid var(--salt-300);
+    border-radius: 28px;
+    padding: 36px 40px;
+    box-shadow: 0 16px 40px rgba(140, 172, 205, .2);
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+  .feedback-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(255,255,255,.85) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .feedback-card::after {
+    content: '';
+    position: absolute;
+    bottom: -50px; left: -30px;
+    width: 130px; height: 130px;
+    background: radial-gradient(circle, rgba(255,255,255,.6) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .feedback-icon {
+    flex-shrink: 0;
+    width: 66px; height: 66px;
+    border-radius: 22px;
+    background: rgba(255,255,255,.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    box-shadow: 0 8px 20px rgba(140,172,205,.22), inset 0 1px 0 rgba(255,255,255,.9);
+    position: relative;
+    z-index: 1;
+  }
+
+  .feedback-content {
+    flex: 1;
+    min-width: 220px;
+    position: relative;
+    z-index: 1;
+  }
+  .feedback-content h2 {
+    font-family: 'Fredoka', 'PingFang SC', sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--ink-deep);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .feedback-content p {
+    font-size: 13.8px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    line-height: 1.75;
+  }
+  .feedback-content p .hl {
+    color: var(--ink-deep);
+    font-weight: 800;
+  }
+
+  .weibo-cta {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 14px 32px;
+    border-radius: 999px;
+    background: var(--grad-main);
+    color: var(--ink-deep);
+    font-weight: 800;
+    font-size: 15px;
+    text-decoration: none;
+    box-shadow: 0 12px 26px rgba(140,172,205,.34), inset 0 1px 0 rgba(255,255,255,.75);
+    transition: transform .22s ease, filter .22s ease;
+    position: relative;
+    z-index: 1;
+    white-space: nowrap;
+  }
+  .weibo-cta:hover {
+    transform: translateY(-3px) scale(1.03);
+    filter: brightness(1.05);
+  }
+  .weibo-cta:active { transform: translateY(0) scale(.98); }
+  .weibo-cta .arrow { transition: transform .22s ease; }
+  .weibo-cta:hover .arrow { transform: translateX(3px); }
+
+  /* ===== 底部小链接 ===== */
+  .site-footer {
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+  }
+  .footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 22px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.78);
+    border: 2px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s, color .2s, background .2s;
+  }
+  .footer-link:hover {
+    background: #fff;
+    border-color: var(--salt-300);
+    color: var(--ink-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(140,172,205,.24);
+  }
+  .footer-link .fl-icon { flex-shrink: 0; font-size: 15px; }
+  .footer-link .fl-arrow {
+    flex-shrink: 0;
+    opacity: .5;
+    font-size: 13px;
+    transition: transform .2s ease;
+  }
+  .footer-link:hover .fl-arrow { transform: translateX(3px); }
+
+  /* ===== 波浪页脚 ===== */
+  .wave-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 48px;
+    z-index: 0;
+    pointer-events: none;
+    opacity: .6;
+  }
+  .wave-footer svg { display: block; width: 100%; height: 100%; }
+
+  /* ===== 空状态 ===== */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-soft);
+  }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 15px; font-weight: 700; }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 900px) {
+    .game-grid { gap: 16px; }
+    .header-inner { height: auto; padding: 12px 0; flex-wrap: wrap; }
+    .nav-cats { order: 3; width: 100%; justify-content: center; }
+
+    .feedback-card { padding: 28px 26px; gap: 18px; }
+    .weibo-cta { width: 100%; justify-content: center; }
+  }
+
+  @media (max-width: 640px) {
+    .container { padding: 0 16px; }
+    .site-header { padding: 0 16px; }
+    .game-grid { grid-template-columns: 1fr; gap: 16px; }
+    .card-body { padding: 15px 18px 17px; }
+    .card-body h3 { font-size: 17px; }
+    .card-body p { font-size: 13.5px; }
+    .logo { font-size: 16px; }
+    .logo-icon { width: 28px; height: 28px; font-size: 15px; }
+    .btn-random { font-size: 12px; padding: 8px 14px; }
+    .toolbar { flex-direction: column; align-items: stretch; }
+    .filter-cats { justify-content: center; }
+    .nav-cats button { font-size: 12px; padding: 6px 12px; }
+
+    .cover-ph { font-size: 44px; }
+    .feedback-card { padding: 24px 20px; border-radius: 24px; gap: 16px; }
+    .feedback-icon { width: 56px; height: 56px; font-size: 26px; border-radius: 18px; }
+    .feedback-content h2 { font-size: 18px; }
+    .feedback-content p { font-size: 13px; }
+    .weibo-cta { font-size: 14px; padding: 12px 24px; }
+
+    .feedback-section { margin-bottom: 28px; }
+    .site-footer { flex-direction: column; gap: 10px; }
+    .footer-link { width: 100%; justify-content: center; font-size: 12.5px; padding: 10px 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cloud cloud-1"></div>
+<div class="cloud cloud-2"></div>
+<div class="cloud cloud-3"></div>
+<div class="cloud cloud-4"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo"
+       href="https://weibo.com/u/8380295925"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="花生的微博主页"
+       aria-label="花生 - 前往微博主页">
+      <span class="logo-icon" aria-hidden="true">🥜</span>
+      <span>花生的游戏合集</span>
+    </a>
+    <nav class="nav-cats" id="navCats">
+      <button class="active" data-cat="全部">全部</button>
+      <button data-cat="经营养成">经营养成</button>
+      <button data-cat="休闲治愈">休闲治愈</button>
+      <button data-cat="剧情冒险">剧情冒险</button>
+      <button data-cat="新作">新作</button>
+      <button data-cat="demo">demo</button>
+    </nav>
+    <button class="btn-random" id="btnRandom">🎲 随机玩一个</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <div class="toolbar">
+    <div class="search-box">
+      <span class="search-icon" aria-hidden="true">🔍</span>
+      <input type="text" id="searchInput" placeholder="搜索游戏名称…" autocomplete="off" aria-label="搜索游戏">
+    </div>
+    <div class="filter-cats" id="filterCats">
+      <button class="active" data-cat="全部">全部</button>
+      <button data-cat="经营养成">经营养成</button>
+      <button data-cat="休闲治愈">休闲治愈</button>
+      <button data-cat="剧情冒险">剧情冒险</button>
+      <button data-cat="新作">新作</button>
+      <button data-cat="demo">demo</button>
+    </div>
+  </div>
+
+  <section class="game-grid" id="gameGrid"></section>
+
+  <!-- ===== 微博反馈卡片 ===== -->
+  <section class="feedback-section" aria-labelledby="feedbackTitle">
+    <div class="feedback-card">
+      <div class="feedback-icon" aria-hidden="true">💌</div>
+      <div class="feedback-content">
+        <h2 id="feedbackTitle">问题反馈来微博找我～</h2>
+        <p>
+          玩过之后有什么想法、想要的游戏类型，或者遇到 bug 想反馈，
+          都欢迎来 <span class="hl">微博私信或评论区</span> 留言。
+          看到都会回复的，也欢迎来找我玩呀 ✨
+        </p>
+      </div>
+      <a class="weibo-cta"
+         href="https://weibo.com/u/8380295925"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="前往花生的微博主页留言">
+        <span aria-hidden="true">🌸</span>
+        <span>去微博留言</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== 底部小链接 ===== -->
+  <footer class="site-footer">
+    <a class="footer-link"
+       href="https://v.douyin.com/jm5ulm6Sd7Q/"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="打开抖音账号"
+       aria-label="抖音账号指路">
+      <span class="fl-icon" aria-hidden="true">🎵</span>
+      <span>抖音账号指路</span>
+      <span class="fl-arrow" aria-hidden="true">→</span>
+    </a>
+
+    <a class="footer-link"
+       href="https://pan.baidu.com/s/1rNJlLLKdH3LgR3wimPYF6Q?pwd=j167"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="打开网盘资源（提取码 j167）"
+       aria-label="文字模拟器与小手机配备资源">
+      <span class="fl-icon" aria-hidden="true">📦</span>
+      <span>文字模拟器+小手机配备</span>
+      <span class="fl-arrow" aria-hidden="true">→</span>
+    </a>
+  </footer>
+
+</main>
+
+<div class="wave-footer">
+  <svg viewBox="0 0 1440 48" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,24 C240,48 480,0 720,24 C960,48 1200,0 1440,24 L1440,48 L0,48 Z" fill="#CADEF1" opacity=".7"/>
+    <path d="M0,32 C240,16 480,48 720,32 C960,16 1200,48 1440,32 L1440,48 L0,48 Z" fill="#C1E5F2" opacity=".5"/>
+  </svg>
+</div>
+
+<script>
+  // ===== 游戏数据 =====
+  // img 填图片地址；留空（""）时会自动显示 emoji 占位封面
+  // badge 填 "demo" 会进入 demo 分类，其它值（如 "NEW"）会进「新作」分类
+  const games = [
+    { name: "存档W", url: "https://s.jiaojuku.com/p/voa0q7", desc: "微恐向剧情游戏，演出效果比较阴间，胆小的朋友请谨慎尝试。", tags: ["剧情冒险", "微恐"], img: "https://pic1.imgdb.cn/i/034al91aw4PBjdA2F2Glvb.png", badge: "", emoji: "🕯️" },
+    { name: "宜北中学小手机", url: "https://s.jiaojuku.com/p/of3m9w", desc: "宜北中学小手机，已更新至 10.0 版本。", tags: ["剧情冒险", "需要api"], img: "https://pic1.imgdb.cn/i/034al91cswurt36fU7wM5y.png", badge: "", emoji: "📱" },
+    { name: "杰云面包铺", url: "https://cocoalulu.github.io/yunyun/", desc: "和一朵云经营森林面包店，解锁 57 种配方与隐藏客人故事。", tags: ["经营养成", "像素温馨"], img: "https://pic1.imgdb.cn/i/034ako0SV14bd26FcC6sVO.png", badge: "" },
+    { name: "lulu_land 经营生活", url: "https://cocoalulu.github.io/lululand/", desc: "在小岛上种植、海钓、建造，和海风一起打造属于你们的小岛。", tags: ["休闲治愈", "建造经营"], img: "https://pic1.imgdb.cn/i/034ako47KcwXOj3cU6eIxA.png", badge: "demo" },
+    { name: "水豚物语", url: "https://cocoalulu.github.io/shuitun/", desc: "回到乡下老宅，一只会说话的水豚敲响了你的房门……", tags: ["休闲治愈", "剧情"], img: "https://pic1.imgdb.cn/i/034aknvCKYUqb1hcMAUNrc.png", badge: "" },
+    { name: "娃圈经纪人", url: "https://share.htmlput.com/p/4sf09a92bu", desc: "在棉花镇签约你的娃娃，安排通告、培养能力，带 TA 成为娃永一。", tags: ["经营养成", "需要api"], img: "https://pic1.imgdb.cn/i/034aknwXTf3K6XuHfnewzc.png", badge: "demo" },
+    { name: "与杰么棒的大冒险", url: "https://cocoalulu.github.io/jiemobang/", desc: "你写的棉花娃娃故事书活了，和杰么棒一起打败魔王吧。", tags: ["剧情冒险", "RPG"], img: "https://pic1.imgdb.cn/i/034akntTgZQ2WeM2KkfOKC.png", badge: "" },
+    { name: "小王子与小皱", url: "https://cocoalulu.github.io/luxiaozhou/", desc: "翻开童年绘本，和小皱一起在 B-612 星上找回遗忘的故事。", tags: ["剧情冒险", "治愈"], img: "https://pic1.imgdb.cn/i/034aknxODWHBcCPdyX97Ph.png", badge: "" },
+    { name: "杰咪杰汪咖啡厅", url: "https://cocoalulu.github.io/coffeeshop/", desc: "和杰咪杰汪一起经营棉花咖啡屋，拉花、烘焙、招待客人。", tags: ["经营养成", "休闲治愈"], img: "https://pic1.imgdb.cn/i/034aknusjYe8hde7CXpH9L.png", badge: "NEW" },
+    { name: "与砂糖橘的果园生活", url: "https://cocoalulu.github.io/fruitlive/", desc: "打理一片属于自己的果园，和砂糖橘一起种下四季的甜。", tags: ["休闲治愈", "经营养成"], img: "https://pic1.imgdb.cn/i/034aknyIwyEld5Hg69TUiZ.png", badge: "NEW" },
+{ name: "末日杂货铺", url: "https://share.htmlput.com/p/ewxq7rfk9e", desc: "在伪人横行的末日里和王橹杰一起经营一家杂货铺", tags: ["末日", "经营养成","需要api"], img: "https://pic1.imgdb.cn/i/034alU67LZIOnb2TY0naPA.png", badge: "" }
+  ];
+
+  let currentCat = '全部';
+  let searchText = '';
+
+  const grid = document.getElementById('gameGrid');
+
+  function matchGame(g) {
+    const badge = (g.badge || '').toLowerCase();
+    const matchCat = currentCat === '全部'
+      || g.tags.includes(currentCat)
+      || (currentCat === '新作' && g.badge)
+      || (currentCat === 'demo' && badge === 'demo');
+    const kw = searchText.toLowerCase();
+    const matchSearch = !kw
+      || g.name.toLowerCase().includes(kw)
+      || g.desc.toLowerCase().includes(kw);
+    return matchCat && matchSearch;
+  }
+
+  function coverHTML(g) {
+    const emoji = g.emoji || '🎮';
+    const badge = (g.badge || '').toLowerCase();
+    const badgeClass = badge === 'demo' ? 'demo' : 'new';
+    return `
+      <div class="cover">
+        <div class="cover-ph" aria-hidden="true">${emoji}</div>
+        ${g.img ? `<img src="${g.img}" alt="${g.name}封面" loading="lazy" decoding="async" onerror="this.remove()">` : ''}
+        ${g.badge ? `<span class="badge ${badgeClass}">${g.badge}</span>` : ''}
+      </div>`;
+  }
+
+  function render() {
+    const filtered = games.filter(matchGame);
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="empty-state"><div class="icon">☁️</div><p>没有找到匹配的游戏，换个词试试吧～</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(g => `
+      <a class="game-card" href="${g.url}" target="_blank" rel="noopener noreferrer" title="打开《${g.name}》">
+        ${coverHTML(g)}
+        <div class="card-body">
+          <h3>${g.name}</h3>
+          <p>${g.desc}</p>
+          <div class="tags">${g.tags.map(t => `<span>${t}</span>`).join('')}</div>
+          <span class="play">▶ 开始游戏</span>
+        </div>
+      </a>
+    `).join('');
+  }
+
+  document.querySelectorAll('#navCats button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#navCats button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCat = btn.dataset.cat;
+      document.querySelectorAll('#filterCats button').forEach(b => b.classList.toggle('active', b.dataset.cat === currentCat));
+      render();
+    });
+  });
+
+  document.querySelectorAll('#filterCats button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#filterCats button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCat = btn.dataset.cat;
+      document.querySelectorAll('#navCats button').forEach(b => b.classList.toggle('active', b.dataset.cat === currentCat));
+      render();
+    });
+  });
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    searchText = e.target.value.trim();
+    render();
+  });
+
+  document.getElementById('btnRandom').addEventListener('click', () => {
+    const pool = games.filter(matchGame);
+    const source = pool.length ? pool : games;
+    const pick = source[Math.floor(Math.random() * source.length)];
+    window.open(pick.url, '_blank', 'noopener');
+  });
+
+  render();
+</script>
+
+</body>
+</html>
